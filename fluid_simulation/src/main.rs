@@ -7,22 +7,43 @@ fn main() {
     // get a random number of particles
     let mut rng = rand::thread_rng();
     //for 1000 iterations
+    //create an array of particles
+    let mut particles: [Vec2; 100] = [vec2(0.0, 0.0); 100];
+    for i in 0..100 {
+        //create a new particle as a vector of 2 floats
+        particles[i] = vec2(0.0, 0.0);
+    }
+    //give the particles X and Y coordinates
+    for particle in &mut particles {
+        particle.x = rng.gen_range(0.0..1.0);
+        particle.y = rng.gen_range(0.0..1.0);
+    }
     for _ in 0..100 {
-        let mut particles = Vec::new();
-        for _ in 0..rng.gen_range(100..200) {
-            //create a new particle as a vector of 2 floats
-            particles.push(vec2(0.0, 0.0));
-        }
-        //give the particles X and Y coordinates
-        for particle in &mut particles {
-            particle.x = rng.gen_range(0.0..1.0);
-            particle.y = rng.gen_range(0.0..1.0);
-        }
-        display_image( particles, &mut window);
+
+        particles =modify_particles(particles);
+        display_image( particles.to_vec(), &mut window);
         
     }
 }
 
+fn modify_particles(particles: [Vec2; 100]) -> [Vec2; 100] {
+    let mut rng = rand::thread_rng();
+    let mut new_particles: [Vec2; 100] = [vec2(0.0, 0.0); 100];
+    for i in 0..100 {
+        let mut particle = particles[i];
+        let x = particle.x;
+        let y = particle.y;
+        let x = x + rng.gen_range(-0.01..0.01);
+        let y = y + rng.gen_range(-0.01..0.01);
+        let y = y%1.0;
+        let x = x%1.0;
+        particle.x = x;
+        particle.y = y;
+
+        new_particles[i] = particle;
+    }
+    new_particles
+}
 fn display_image( particles: Vec<Vec2>, window: &mut show_image::WindowProxy)  {
     let width = 1920;
     let height = 1080;
@@ -48,6 +69,5 @@ fn display_image( particles: Vec<Vec2>, window: &mut show_image::WindowProxy)  {
     let image = ImageView::new(ImageInfo::rgb8(1920, 1080), &pixel_data);
 
     window.set_image("image-001", image).unwrap();
-    // return the window
-    //window.wait_until_destroyed().unwrap();
+
 }
